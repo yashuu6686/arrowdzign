@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, X, Upload, Image as ImageIcon, Save, ArrowLeft, Heart, Eye, MessageCircle, Share2, Loader2, Edit, Trash2, Filter } from 'lucide-react';
+import { Plus, X, Upload, Image as ImageIcon, Save, ArrowLeft, Heart, Eye, MessageCircle, Share2, Loader2, Edit, Trash2, Filter, LogOut } from 'lucide-react';
 
-const API_BASE_URL = ' https://backend-09w4.onrender.com/api';
+const API_BASE_URL = 'https://backend-09w4.onrender.com/api';
 
 export default function BehanceDashboard() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+  const [loginError, setLoginError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  
   const [showDialog, setShowDialog] = useState(false);
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -24,17 +30,77 @@ export default function BehanceDashboard() {
   });
 
   useEffect(() => {
-    fetchCategories();
-    fetchProjects();
+    checkAuth();
   }, []);
 
   useEffect(() => {
-    if (selectedCategory) {
-      fetchProjects(selectedCategory);
-    } else {
+    if (isAuthenticated) {
+      fetchCategories();
       fetchProjects();
     }
-  }, [selectedCategory]);
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (selectedCategory) {
+        fetchProjects(selectedCategory);
+      } else {
+        fetchProjects();
+      }
+    }
+  }, [selectedCategory, isAuthenticated]);
+
+  const checkAuth = () => {
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      setIsAuthenticated(true);
+    }
+    setIsCheckingAuth(false);
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoginError('');
+    setIsLoggingIn(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/admin/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginForm),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
+      localStorage.setItem('adminToken', data.token);
+      setIsAuthenticated(true);
+      setLoginForm({ username: '', password: '' });
+    } catch (error) {
+      setLoginError(error.message);
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken');
+    setIsAuthenticated(false);
+    setProjects([]);
+    setSelectedProject(null);
+  };
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('adminToken');
+    return {
+      'Authorization': `Bearer ${token}`,
+    };
+  };
 
   const fetchCategories = async () => {
     try {
@@ -201,10 +267,17 @@ export default function BehanceDashboard() {
 
       const response = await fetch(url, {
         method,
+        headers: getAuthHeaders(),
         body: formDataToSend,
       });
 
       setUploadProgress(90);
+
+      if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        handleLogout();
+        return;
+      }
 
       if (!response.ok) {
         const error = await response.json();
@@ -268,7 +341,14 @@ export default function BehanceDashboard() {
     try {
       const response = await fetch(`${API_BASE_URL}/projects/${projectId}`, {
         method: 'DELETE',
+        headers: getAuthHeaders(),
       });
+
+      if (response.status === 401) {
+        alert('Session expired. Please login again.');
+        handleLogout();
+        return;
+      }
 
       if (!response.ok) {
         const error = await response.json();
@@ -310,6 +390,86 @@ export default function BehanceDashboard() {
     setShowDialog(true);
   };
 
+  // Loading state
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+      </div>
+    );
+  }
+
+  // Login page
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-8">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Behance Admin</h1>
+            <p className="text-gray-600">Sign in to manage your portfolio</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                Username
+              </label>
+              <input
+                type="text"
+                value={loginForm.username}
+                onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
+                placeholder="Enter your username"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+                disabled={isLoggingIn}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                value={loginForm.password}
+                onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                placeholder="Enter your password"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+                disabled={isLoggingIn}
+              />
+            </div>
+
+            {loginError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {loginError}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={isLoggingIn}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isLoggingIn ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                'Sign In'
+              )}
+            </button>
+          </form>
+
+          <div className="mt-6 text-center text-sm text-gray-500">
+            {/* <p>Default credentials: admin / admin123</p> */}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Project Detail View
   if (selectedProject) {
     return (
@@ -324,8 +484,12 @@ export default function BehanceDashboard() {
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium">
-              Start Free Trial
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-sm font-medium"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
             </button>
           </div>
         </header>
@@ -473,11 +637,12 @@ export default function BehanceDashboard() {
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium">
-            Start Free Trial
-          </button>
-          <button className="border border-white hover:bg-gray-800 px-4 py-2 rounded text-sm font-medium">
-            Share Work
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-sm font-medium"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
           </button>
         </div>
       </header>
