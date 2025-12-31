@@ -36,6 +36,9 @@ export default function ArrowDzignPortfolio() {
     });
   };
 
+
+  const API_BASE_URL = 'https://backend-09w4.onrender.com/api';
+
   const sendToWhatsapp = (e) => {
     e.preventDefault();
     const text = `*New Inquiry from Website*%0a%0a*Name:* ${formData.name}%0a*Email:* ${formData.email}%0a*Project:* ${formData.project}%0a*Message:* ${formData.message}`;
@@ -70,7 +73,7 @@ export default function ArrowDzignPortfolio() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/projects');
+        const response = await fetch(`${API_BASE_URL}/projects`);
         const data = await response.json();
         console.log('Fetched projects:', data);
         setProjects(data.projects || []);
