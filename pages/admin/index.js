@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, X, Upload, Image as ImageIcon, Save, ArrowLeft, Heart, Eye, MessageCircle, Share2, Loader2, Edit, Trash2, Filter, LogOut } from 'lucide-react';
+import { Plus, X, Upload, Image as ImageIcon, Save, ArrowLeft, Heart, Eye, MessageCircle, Share2, Loader2, Edit, Trash2, Filter, LogOut, Video } from 'lucide-react';
+
+
+// import MailOutlineIcon from '@mui/icons-material/MailOutline';
+
 
 const API_BASE_URL = 'https://backend-09w4.onrender.com/api';
 
@@ -26,7 +30,10 @@ export default function BehanceDashboard() {
     coverImage: null,
     coverImagePreview: null,
     images: [],
-    imagePreviews: []
+    imagePreviews: [],
+    media: null,
+    mediaPreview: null,
+    mediaType: null
   });
 
   useEffect(() => {
@@ -212,6 +219,21 @@ export default function BehanceDashboard() {
     setUploadProgress(0);
   };
 
+  const handleMediaChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const isVideo = file.type.startsWith('video');
+    const fileURL = URL.createObjectURL(file);
+
+    setFormData(prev => ({
+      ...prev,
+      media: file,
+      mediaPreview: fileURL,
+      mediaType: isVideo ? 'video' : 'image'
+    }));
+  };
+
   const removeImage = (index) => {
     const newImages = formData.images.filter((_, i) => i !== index);
     const newPreviews = formData.imagePreviews.filter((_, i) => i !== index);
@@ -222,6 +244,18 @@ export default function BehanceDashboard() {
       ...formData, 
       images: newImages,
       imagePreviews: newPreviews
+    });
+  };
+
+  const removeMedia = () => {
+    if (formData.mediaPreview) {
+      URL.revokeObjectURL(formData.mediaPreview);
+    }
+    setFormData({
+      ...formData,
+      media: null,
+      mediaPreview: null,
+      mediaType: null
     });
   };
 
@@ -256,6 +290,13 @@ export default function BehanceDashboard() {
       formData.images.forEach((file) => {
         formDataToSend.append("images", file);
       });
+
+      setUploadProgress(60);
+
+      // Add media (video or image)
+      if (formData.media) {
+        formDataToSend.append("media", formData.media);
+      }
 
       setUploadProgress(70);
 
@@ -296,7 +337,10 @@ export default function BehanceDashboard() {
         coverImage: null,
         coverImagePreview: null,
         images: [],
-        imagePreviews: []
+        imagePreviews: [],
+        media: null,
+        mediaPreview: null,
+        mediaType: null
       });
 
       setShowDialog(false);
@@ -328,7 +372,10 @@ export default function BehanceDashboard() {
       coverImage: null,
       coverImagePreview: project.coverImageUrl,
       images: [],
-      imagePreviews: project.imagesUrls || []
+      imagePreviews: project.imagesUrls || [],
+      media: null,
+      mediaPreview: project.mediaUrl || null,
+      mediaType: project.mediaType || null
     });
     setShowDialog(true);
   };
@@ -385,7 +432,10 @@ export default function BehanceDashboard() {
       coverImage: null,
       coverImagePreview: null,
       images: [],
-      imagePreviews: []
+      imagePreviews: [],
+      media: null,
+      mediaPreview: null,
+      mediaType: null
     });
     setShowDialog(true);
   };
@@ -461,10 +511,6 @@ export default function BehanceDashboard() {
               )}
             </button>
           </form>
-
-          <div className="mt-6 text-center text-sm text-gray-500">
-            {/* <p>Default credentials: admin / admin123</p> */}
-          </div>
         </div>
       </div>
     );
@@ -571,6 +617,28 @@ export default function BehanceDashboard() {
               className="w-full rounded-lg shadow-lg"
             />
           </div>
+
+          {/* Display Video or Media */}
+          {selectedProject.mediaUrl && (
+            <div className="mb-8">
+              {selectedProject.mediaType === 'video' ? (
+                <video
+                  src={selectedProject.mediaUrl}
+                  controls
+                  className="w-full rounded-lg shadow-lg"
+                  style={{ maxHeight: '600px' }}
+                >
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <img
+                  src={selectedProject.mediaUrl}
+                  alt="Project media"
+                  className="w-full rounded-lg shadow-lg"
+                />
+              )}
+            </div>
+          )}
 
           {selectedProject.imagesUrls && selectedProject.imagesUrls.length > 0 && (
             <div className="space-y-8 mb-12">
@@ -712,6 +780,11 @@ export default function BehanceDashboard() {
                       alt={project.title}
                       className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
+                    {project.mediaType === 'video' && (
+                      <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white p-2 rounded">
+                        <Video className="w-5 h-5" />
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all" />
                     <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="flex items-center gap-4 text-white text-sm">
@@ -874,6 +947,56 @@ export default function BehanceDashboard() {
                         type="file"
                         accept="image/*"
                         onChange={handleCoverImageChange}
+                        className="hidden"
+                        disabled={isUploading}
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
+
+              {/* Video/Media Upload Section */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                  Media (Video or Image) {editMode && '(Leave empty to keep current)'}
+                </label>
+                <div className="border-2 border-dashed border-purple-300 rounded-lg p-6 text-center bg-purple-50">
+                  {formData.mediaPreview ? (
+                    <div className="relative">
+                      {formData.mediaType === 'video' ? (
+                        <video
+                          src={formData.mediaPreview}
+                          controls
+                          className="w-full h-48 object-contain rounded bg-black"
+                        >
+                          Your browser does not support the video tag.
+                        </video>
+                      ) : (
+                        <img
+                          src={formData.mediaPreview}
+                          alt="Media"
+                          className="w-full h-48 object-cover rounded"
+                        />
+                      )}
+                      {!isUploading && (
+                        <button
+                          onClick={removeMedia}
+                          className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <label className={`cursor-pointer ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                      <Video className="w-12 h-12 text-purple-400 mx-auto mb-2" />
+                      <p className="text-sm text-purple-600 font-medium mb-1">Click to upload video or image</p>
+                      <p className="text-xs text-purple-500">MP4, MOV, AVI, MKV, WebM (Max 100MB)</p>
+                      <p className="text-xs text-purple-400 mt-1">or JPEG, PNG, GIF</p>
+                      <input
+                        type="file"
+                        accept="video/*,image/*"
+                        onChange={handleMediaChange}
                         className="hidden"
                         disabled={isUploading}
                       />

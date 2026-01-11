@@ -9,7 +9,10 @@ import {
   Send,
   Instagram,
   Linkedin,
+  Mail 
 } from "lucide-react";
+
+// import MailOutlineIcon from '@mui/icons-material/MailOutline';
 
 export default function ArrowDzignPortfolio() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -257,11 +260,11 @@ export default function ArrowDzignPortfolio() {
             </p>
           </div>
           <div className="text-center md:text-left md:border-l border-gray-800 md:pl-8">
-            <h3 className="text-4xl font-bold text-white">100%</h3>
+            <h3 className="text-4xl font-bold text-white">93%</h3>
             <p className="text-[#f9a310] uppercase tracking-widest text-xs">
               Client Satisfaction
             </p>
-          </div>
+          </div>  
         </div>
       </div>
 
@@ -596,6 +599,18 @@ export default function ArrowDzignPortfolio() {
                 alt="Behance"
               />
             </a>
+
+              <a
+               style={{ marginLeft: "-45px", marginTop: "2px" }}
+              href="#"
+              className="text-gray-400 hover:text-white text-white transition-colors flex items-center justify-center w-15 h-20"
+            >
+              <Mail style={{marginRight: "20px",}} className="w-8 h-7" />
+            </a>
+            
+         
+            
+         
           </div>
 
           <p className="text-gray-600 text-sm">
