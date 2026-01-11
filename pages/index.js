@@ -359,7 +359,7 @@ export default function ArrowDzignPortfolio() {
 
           {portfolioItems.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-400 text-lg">No projects found. Add some from the admin panel!</p>
+              {/* <p className="text-gray-400 text-lg">No projects found. Add some from the admin panel!</p> */}
             </div>
           )}
         </div>
