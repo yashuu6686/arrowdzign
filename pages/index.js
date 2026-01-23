@@ -587,7 +587,7 @@ export default function ArrowDzignPortfolio() {
             </a>
 
             <a
-              href="https://www.behance.net/arrowdzign"
+               href="mailto:workwithyash.in@gmail.com"
               target="_blank"
               rel="noopener noreferrer"
               style={{ marginLeft: "-45px", marginTop: "2px" }}
@@ -602,7 +602,7 @@ export default function ArrowDzignPortfolio() {
 
               <a
                style={{ marginLeft: "-45px", marginTop: "2px" }}
-              href="#"
+              href="workwithyash.in@gmail.com"
               className="text-gray-400 hover:text-white text-white transition-colors flex items-center justify-center w-15 h-20"
             >
               <Mail style={{marginRight: "20px",}} className="w-8 h-7" />
@@ -672,4 +672,5 @@ export default function ArrowDzignPortfolio() {
       )}
     </div>
   );
+
 }
