@@ -587,7 +587,7 @@ export default function ArrowDzignPortfolio() {
             </a>
 
             <a
-               href="mailto:workwithyash.in@gmail.com"
+              href="mailto:workwithyash.in@gmail.com?subject=Work%20Inquiry&body=Hi%20Yash,"
               target="_blank"
               rel="noopener noreferrer"
               style={{ marginLeft: "-45px", marginTop: "2px" }}
@@ -674,3 +674,4 @@ export default function ArrowDzignPortfolio() {
   );
 
 }
+
