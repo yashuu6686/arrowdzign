@@ -669,7 +669,7 @@ export default function ArrowDzignPortfolio() {
           </div>
 
           <p className="text-gray-600 text-sm">
-            &copy; 2025 arrowdzign. All Rights Reserved. <br />
+            &copy; 2026 arrowdzign. All Rights Reserved. <br />
             Designed & Developed by arrowdzign productions.
           </p>
         </div>
