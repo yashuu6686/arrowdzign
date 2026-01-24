@@ -627,7 +627,7 @@ export default function ArrowDzignPortfolio() {
             </a>
 
             <a
-              href="https://www.behance.net/arrowdzign"
+              href="mailto:workwithyash.in@gmail.com?subject=Work%20Inquiry&body=Hi%20Yash,"
               target="_blank"
               rel="noopener noreferrer"
               style={{ marginLeft: "-45px", marginTop: "2px" }}
@@ -712,4 +712,6 @@ export default function ArrowDzignPortfolio() {
       )}
     </div>
   );
+
 }
+
