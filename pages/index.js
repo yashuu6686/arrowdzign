@@ -9,7 +9,8 @@ import {
   Send,
   Instagram,
   Linkedin,
-  Mail
+  Mail,
+  Loader2
 } from "lucide-react";
 
 // import MailOutlineIcon from '@mui/icons-material/MailOutline';
@@ -27,6 +28,7 @@ export default function ArrowDzignPortfolio() {
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const filterProjects = (category) => {
     setActiveFilter(category);
@@ -44,44 +46,37 @@ export default function ArrowDzignPortfolio() {
 
   const sendToWhatsapp = (e) => {
     e.preventDefault();
+    if (!formData.name || !formData.email) {
+      alert("Please enter both Name and Email.");
+      return;
+    }
+    setIsSubmitting(true);
     const text = `*New Inquiry from Website*%0a%0a*Name:* ${formData.name}%0a*Email:* ${formData.email}%0a*Project:* ${formData.project}%0a*Message:* ${formData.message}`;
-    window.open(`https://wa.me/918866922651?text=${text}`, "_blank");
+
+    setTimeout(() => {
+      window.open(`https://wa.me/918866922651?text=${text}`, "_blank");
+      setIsSubmitting(false);
+    }, 1000);
   };
 
-  const sendEmail = async (e) => {
+  const sendEmail = (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.message) {
-      alert("Please fill in all fields.");
+    if (!formData.name || !formData.email) {
+      alert("Please enter both Name and Email.");
       return;
     }
 
-    try {
-      const response = await fetch(`${API_BASE_URL}/contact`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+    setIsSubmitting(true);
+    const subject = `Work Inquiry - ${formData.project}`;
+    const body = `Hi Yash,\n\nMy name is ${formData.name}.\nEmail: ${formData.email}\nProject: ${formData.project}\n\nMessage:\n${formData.message}`;
 
-      const data = await response.json();
+    const mailtoUrl = `mailto:workwithyash.in@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
-      if (response.ok) {
-        alert("Message sent successfully!");
-        setFormData({
-          name: "",
-          email: "",
-          project: "Graphic Design",
-          message: "",
-        });
-      } else {
-        alert(data.error || "Failed to send message. Please try WhatsApp.");
-      }
-    } catch (error) {
-      console.error('Email error:', error);
-      alert("Something went wrong. Please check your connection or use WhatsApp.");
-    }
+    setTimeout(() => {
+      window.location.href = mailtoUrl;
+      setIsSubmitting(false);
+    }, 1000);
   };
 
   const mapCategory = (cat) => {
@@ -542,6 +537,7 @@ export default function ArrowDzignPortfolio() {
                   Name
                 </label>
                 <input
+                  required
                   name="name"
                   type="text"
                   placeholder="Your Name"
@@ -555,6 +551,7 @@ export default function ArrowDzignPortfolio() {
                   Email
                 </label>
                 <input
+                  required
                   name="email"
                   type="email"
                   placeholder="your@email.com"
@@ -595,15 +592,33 @@ export default function ArrowDzignPortfolio() {
               <div className="flex flex-col md:flex-row gap-4">
                 <button
                   onClick={sendEmail}
-                  className="flex-1 bg-[#f9a310] hover:bg-white text-black font-bold py-4 rounded transition-all flex items-center justify-center gap-2"
+                  disabled={isSubmitting}
+                  className={`flex-1 bg-[#f9a310] hover:bg-white text-black font-bold py-4 rounded transition-all flex items-center justify-center gap-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
-                  <Mail className="w-5 h-5" /> Send Email
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" /> Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="w-5 h-5" /> Send Email
+                    </>
+                  )}
                 </button>
                 <button
                   onClick={sendToWhatsapp}
-                  className="flex-1 border border-[#f9a310] text-[#f9a310] hover:bg-[#f9a310] hover:text-black font-bold py-4 rounded transition-all flex items-center justify-center gap-2"
+                  disabled={isSubmitting}
+                  className={`flex-1 border border-[#f9a310] text-[#f9a310] hover:bg-[#f9a310] hover:text-black font-bold py-4 rounded transition-all flex items-center justify-center gap-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
-                  <Send className="w-5 h-5" /> WhatsApp
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" /> Redirecting...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5" /> WhatsApp
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -627,7 +642,7 @@ export default function ArrowDzignPortfolio() {
             </a>
 
             <a
-              href="mailto:workwithyash.in@gmail.com?subject=Work%20Inquiry&body=Hi%20Yash,"
+              href="https://www.behance.net/arrowdzign"
               target="_blank"
               rel="noopener noreferrer"
               style={{ marginLeft: "-45px", marginTop: "2px" }}
@@ -642,7 +657,7 @@ export default function ArrowDzignPortfolio() {
 
             <a
               style={{ marginLeft: "-45px", marginTop: "2px" }}
-              href="mailto:workwithyash.in@gmail.com"
+              href="mailto:workwithyash.in@gmail.com?subject=Work%20Inquiry&body=Hi%20Yash,"
               className="text-gray-400 hover:text-white text-white transition-colors flex items-center justify-center w-15 h-20"
             >
               <Mail style={{ marginRight: "20px", }} className="w-8 h-7" />
