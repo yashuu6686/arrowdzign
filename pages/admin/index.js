@@ -7,6 +7,9 @@ import { Plus, X, Upload, Image as ImageIcon, Save, ArrowLeft, Heart, Eye, Messa
 
 const API_BASE_URL = 'https://backend-09w4.onrender.com/api';
 
+
+const API_DEVMODE = "http://localhost:5000/api/projects"
+
 export default function BehanceDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);

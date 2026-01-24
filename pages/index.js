@@ -9,7 +9,7 @@ import {
   Send,
   Instagram,
   Linkedin,
-  Mail 
+  Mail
 } from "lucide-react";
 
 // import MailOutlineIcon from '@mui/icons-material/MailOutline';
@@ -48,6 +48,42 @@ export default function ArrowDzignPortfolio() {
     window.open(`https://wa.me/918866922651?text=${text}`, "_blank");
   };
 
+  const sendEmail = async (e) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.email || !formData.message) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Message sent successfully!");
+        setFormData({
+          name: "",
+          email: "",
+          project: "Graphic Design",
+          message: "",
+        });
+      } else {
+        alert(data.error || "Failed to send message. Please try WhatsApp.");
+      }
+    } catch (error) {
+      console.error('Email error:', error);
+      alert("Something went wrong. Please check your connection or use WhatsApp.");
+    }
+  };
+
   const mapCategory = (cat) => {
     if (cat === "graphic-design") return "graphic";
     if (cat === "video-edits") return "video";
@@ -63,8 +99,8 @@ export default function ArrowDzignPortfolio() {
       p.category === "graphic-design"
         ? "Graphic Design"
         : p.category === "video-edits"
-        ? "Video Editing"
-        : "Photography",
+          ? "Video Editing"
+          : "Photography",
     title: p.title,
     hasPlay: p.media?.type === "video",
     description: p.description,
@@ -264,7 +300,7 @@ export default function ArrowDzignPortfolio() {
             <p className="text-[#f9a310] uppercase tracking-widest text-xs">
               Client Satisfaction
             </p>
-          </div>  
+          </div>
         </div>
       </div>
 
@@ -281,41 +317,37 @@ export default function ArrowDzignPortfolio() {
             <div className="flex flex-wrap gap-2 mt-6 md:mt-0">
               <button
                 onClick={() => setActiveFilter("all")}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
-                  activeFilter === "all"
-                    ? "bg-white text-black"
-                    : "bg-[#1a1a1a] text-gray-400 hover:bg-[#f9a310] hover:text-black"
-                }`}
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${activeFilter === "all"
+                  ? "bg-white text-black"
+                  : "bg-[#1a1a1a] text-gray-400 hover:bg-[#f9a310] hover:text-black"
+                  }`}
               >
                 All
               </button>
               <button
                 onClick={() => setActiveFilter("graphic")}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
-                  activeFilter === "graphic"
-                    ? "bg-white text-black"
-                    : "bg-[#1a1a1a] text-gray-400 hover:bg-[#f9a310] hover:text-black"
-                }`}
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${activeFilter === "graphic"
+                  ? "bg-white text-black"
+                  : "bg-[#1a1a1a] text-gray-400 hover:bg-[#f9a310] hover:text-black"
+                  }`}
               >
                 Graphic Design
               </button>
               <button
                 onClick={() => setActiveFilter("video")}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
-                  activeFilter === "video"
-                    ? "bg-white text-black"
-                    : "bg-[#1a1a1a] text-gray-400 hover:bg-[#f9a310] hover:text-black"
-                }`}
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${activeFilter === "video"
+                  ? "bg-white text-black"
+                  : "bg-[#1a1a1a] text-gray-400 hover:bg-[#f9a310] hover:text-black"
+                  }`}
               >
                 Video Editing
               </button>
               <button
                 onClick={() => setActiveFilter("photo")}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
-                  activeFilter === "photo"
-                    ? "bg-white text-black"
-                    : "bg-[#1a1a1a] text-gray-400 hover:bg-[#f9a310] hover:text-black"
-                }`}
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${activeFilter === "photo"
+                  ? "bg-white text-black"
+                  : "bg-[#1a1a1a] text-gray-400 hover:bg-[#f9a310] hover:text-black"
+                  }`}
               >
                 Photography
               </button>
@@ -560,12 +592,20 @@ export default function ArrowDzignPortfolio() {
                   className="w-full bg-black border border-gray-800 text-white rounded py-3 px-4 focus:outline-none focus:border-[#f9a310]"
                 ></textarea>
               </div>
-              <button
-                onClick={sendToWhatsapp}
-                className="w-full bg-[#f9a310] hover:bg-white text-black font-bold py-4 rounded transition-all flex items-center justify-center gap-2"
-              >
-                <Send className="w-5 h-5" /> Send to WhatsApp
-              </button>
+              <div className="flex flex-col md:flex-row gap-4">
+                <button
+                  onClick={sendEmail}
+                  className="flex-1 bg-[#f9a310] hover:bg-white text-black font-bold py-4 rounded transition-all flex items-center justify-center gap-2"
+                >
+                  <Mail className="w-5 h-5" /> Send Email
+                </button>
+                <button
+                  onClick={sendToWhatsapp}
+                  className="flex-1 border border-[#f9a310] text-[#f9a310] hover:bg-[#f9a310] hover:text-black font-bold py-4 rounded transition-all flex items-center justify-center gap-2"
+                >
+                  <Send className="w-5 h-5" /> WhatsApp
+                </button>
+              </div>
             </div>
           </div>
 
@@ -600,17 +640,17 @@ export default function ArrowDzignPortfolio() {
               />
             </a>
 
-              <a
-               style={{ marginLeft: "-45px", marginTop: "2px" }}
-              href="#"
+            <a
+              style={{ marginLeft: "-45px", marginTop: "2px" }}
+              href="mailto:workwithyash.in@gmail.com"
               className="text-gray-400 hover:text-white text-white transition-colors flex items-center justify-center w-15 h-20"
             >
-              <Mail style={{marginRight: "20px",}} className="w-8 h-7" />
+              <Mail style={{ marginRight: "20px", }} className="w-8 h-7" />
             </a>
-            
-         
-            
-         
+
+
+
+
           </div>
 
           <p className="text-gray-600 text-sm">
