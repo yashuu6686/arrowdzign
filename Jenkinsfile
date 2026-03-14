@@ -25,34 +25,31 @@ pipeline {
             }
         }
 
-        // stage('Run Tests') {
-        //     steps {
-        //         sh 'npm test'
-        //     }
-        // }
 
         stage('Build Docker Image') {
-    steps {
-        sh 'docker build -t yashpaladiya/demo-app:latest .'
-    }
-}
-
-stage('Push Docker Image') {
-    steps {
-        withCredentials([usernamePassword(
-            credentialsId: 'Docker',
-            usernameVariable: 'DOCKER_USER',
-            passwordVariable: 'DOCKER_PASS'
-        )]) {
-            sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-            sh 'docker push yashpaladiya/demo-app:latest'
+            steps {
+                sh "docker build -t ${env.DOCKER_IMAGE} ."
+            }
         }
-    }
-}
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'Docker',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh "docker push ${env.DOCKER_IMAGE}"
+                }
+            }
+        }
 
         stage('Deploy') {
             steps {
-                sh 'docker run -d -p 3000:3000 --name demo-app yashpaladiya/demo-app:latest'
+                sh "docker stop demo-app || true"
+                sh "docker rm demo-app || true"
+                sh "docker run -d -p 3000:3000 --name demo-app ${env.DOCKER_IMAGE}"
             }
         }
 
