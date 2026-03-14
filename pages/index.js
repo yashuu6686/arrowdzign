@@ -249,7 +249,7 @@ export default function ArrowDzignPortfolio() {
             </span>
           </div>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-tighter mb-8 leading-none">
-            CRAFTING <br />
+            CRAFTINGS <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-600">
               VISUAL LEGACIES
             </span>
