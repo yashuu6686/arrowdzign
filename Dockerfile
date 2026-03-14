@@ -24,12 +24,3 @@ COPY --from=builder /app/package.json ./package.json
 EXPOSE 3000
 
 CMD ["npm", "start"]
-```
-
-Also add a `.dockerignore` file to keep the image lean:
-```
-node_modules
-.next
-.git
-.env
-*.md
