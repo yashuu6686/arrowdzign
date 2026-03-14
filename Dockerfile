@@ -1,11 +1,9 @@
-# Stage 1: Build
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm install --include=dev          # 👈 Change 1: --include=dev add karo
+RUN npm install --include=dev          
 COPY . .
-RUN ./node_modules/.bin/next build     # 👈 Change 2: direct path use karo
-# Stage 2: Run
+RUN ./node_modules/.bin/next build    
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
