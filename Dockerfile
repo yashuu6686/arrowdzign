@@ -1,10 +1,10 @@
-FROM node:20-alpine AS builder
+FROM node:20 AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm install --include=dev          
+RUN npm install
 COPY . .
-RUN ./node_modules/.bin/next build    
-FROM node:20-alpine AS runner
+RUN npm run build
+FROM node:20-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=builder /app/public ./public
