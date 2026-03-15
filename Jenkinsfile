@@ -33,17 +33,20 @@ pipeline {
         }
 
         stage('Push Docker Image') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'Docker',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                    sh "docker push ${env.DOCKER_IMAGE}"
-                }
+    steps {
+        retry(3) {
+            withCredentials([usernamePassword(
+                credentialsId: 'Docker',
+                usernameVariable: 'DOCKER_USER',
+                passwordVariable: 'DOCKER_PASS'
+            )]) {
+                sh 'docker logout || true'
+                sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                sh "docker push ${env.DOCKER_IMAGE}"
             }
         }
+    }
+}
 
         stage('Deploy') {
             steps {
