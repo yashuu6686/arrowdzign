@@ -52,7 +52,7 @@ pipeline {
             steps {
                 sh "docker stop demo-app || true"
                 sh "docker rm demo-app || true"
-                sh "docker run -d -p 3001:3001 --name demo-app ${env.DOCKER_IMAGE}"
+                sh "docker run -d -p 3000:3000 --name demo-app ${env.DOCKER_IMAGE}"
             }
         }
 
