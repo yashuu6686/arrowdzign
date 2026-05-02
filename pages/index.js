@@ -151,7 +151,7 @@ export default function ArrowDzignPortfolio() {
           <a href="#" className="block w-40 relative z-50">
             <img
               src="Horizontal.png"
-              alt="ArrowDzign"
+              alt="arrowdesign"
               className="w-full object-contain"
             />
           </a>
