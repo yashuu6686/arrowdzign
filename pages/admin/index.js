@@ -727,7 +727,7 @@ export default function BehanceDashboard() {
             <div className="flex-1">
               <h2 className="text-3xl font-bold mb-2">Yash Prajapati</h2>
               <p className="text-gray-300 mb-1">Graphic Designer, Logo and Brand Identity Designer</p>
-              <p className="text-gray-400 text-sm">arrowdzign • Surat, India</p>
+              <p className="text-gray-400 text-sm">arrowdesign • Surat, India</p>
               <div className="mt-4">
                 <span className="inline-block bg-green-600 text-xs px-3 py-1 rounded-full">Available Now</span>
               </div>

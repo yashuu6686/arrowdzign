@@ -15,7 +15,7 @@ import {
 
 // import MailOutlineIcon from '@mui/icons-material/MailOutline';
 
-export default function ArrowDzignPortfolio() {
+export default function ArrowDesignPortfolio() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState("all");
   const [formData, setFormData] = useState({
@@ -457,7 +457,7 @@ export default function ArrowDzignPortfolio() {
 
             <div className="p-8 border-l-2 border-[#f9a310] bg-gray-900/20">
               <p className="text-gray-300 italic mb-6 text-lg">
-                "The brand identity ArrowDzign created for us completely changed
+                "The brand identity ArrowDesign created for us completely changed
                 how our customers see us. Professional and visionary."
               </p>
               <div className="flex items-center gap-3">
@@ -669,8 +669,8 @@ export default function ArrowDzignPortfolio() {
           </div>
 
           <p className="text-gray-600 text-sm">
-            &copy; 2026 arrowdzign. All Rights Reserved. <br />
-            Designed & Developed by arrowdzign productions.
+            &copy; 2026 arrowdesign. All Rights Reserved. <br />
+            Designed & Developed by arrowdesign productions.
           </p>
         </div>
       </section>
